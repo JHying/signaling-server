@@ -2,7 +2,7 @@
 
 視訊 Server - WebRTC + WebSocket
 為支援不同客戶端，使用 SDP (session description protocol) 作為通訊協定
-連線: http://localhost:8996/signal/call/{username}.html
+連線: http://localhost:8088/signal/call/{username}.html
 
 (本專案不包含 ssl - p12 檔)
 
