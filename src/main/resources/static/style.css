@@ -6,18 +6,59 @@ body {
 
 #main {
   position: absolute;
-  width: 370px;
-  height: 550px;
+  width: 100%;
+  height: 100%;
 }
 
 #localVideo {
   position: absolute;
   background: #757474;
-  top: 10px;
-  right: 10px;
-  width: 100px;
-  height: 150px;
+  top: 2%;
+  right: 1%;
+  width: 15%;
+  height: 40%;
   z-index: 2;
+}
+
+/* localVideo自適應 */
+/* Extra large devices */
+@media (min-width: 1200px) {
+  #localVideo {
+    width: 16%;
+    height: 45%;
+  }
+}
+
+/* desktops */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  #localVideo {
+    width: 22%;
+    height: 25%;
+  }
+}
+
+/* tablets */
+@media (min-width: 768px) and (max-width: 991.98px)  {
+  #localVideo {
+    width: 30%;
+    height: 28%;
+  }
+}
+
+/* phones */
+@media (min-width: 500px) and (max-width: 767.98px) {
+  #localVideo {
+    width: 20%;
+    height: 32%;
+  }
+}
+
+/* phones */
+@media (max-width: 499.98px) {
+  #localVideo {
+    width: 32%;
+    height: 20%;
+  }
 }
 
 #remoteVideo {
@@ -29,26 +70,30 @@ body {
   background: #222;
 }
 
+.my-row {
+  display: flex;
+  justify-content: center;
+}
+
 #buttons {
   z-index: 3;
-  bottom: 20px;
-  left: 90px;
+  bottom: 2%;
   position: absolute;
 }
 
 #receiver {
-  border: 1px solid #ccc;
-  padding: 7px 0px;
-  border-radius: 5px;
-  padding-left: 5px;
-  margin-bottom: 5px;
+  border: 0.0625em solid #ccc;
+  padding: 0.4375em 0px;
+  border-radius: 0.3125em;
+  padding-left: 0.3125em;
+  margin-bottom: 0.3125em;
 }
 
 #receiver:focus {
   border-color: #66afe9;
   outline: 0;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 8px rgba(102, 175, 233, 0.6);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 8px rgba(102, 175, 233, 0.6);
+  -webkit-box-shadow: inset 0 0.0625em 0.0625em rgba(0, 0, 0, 0.075),
+    0 0 0.5em rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 0.0625em 0.0625em rgba(0, 0, 0, 0.075),
+    0 0 0.5em rgba(102, 175, 233, 0.6);
 }

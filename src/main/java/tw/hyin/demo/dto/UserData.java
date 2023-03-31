@@ -1,4 +1,4 @@
-package tw.hyin.demo.repo.dto;
+package tw.hyin.demo.dto;
 
 
 import lombok.AllArgsConstructor;

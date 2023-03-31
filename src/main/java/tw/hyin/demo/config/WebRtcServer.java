@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import tw.hyin.demo.Log;
-import tw.hyin.demo.repo.dto.MsgObj;
+import tw.hyin.demo.dto.MsgObj;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author JHying(Rita) on 2022.
- * @description WebRTC(建立會話) + WebSocket(監聽會話請求)
+ * @description WebRTC(建立會話流程) + WebSocket(監聽會話請求)
  */
 @Component
-@ServerEndpoint(value = "/call/{username}")
+@ServerEndpoint(value = "/call/{username}") //配置 WebSocket 服務的進入點 (對應到開放的 api 介面)
 public class WebRtcServer {
 
     /**
@@ -28,12 +28,11 @@ public class WebRtcServer {
     private static final Map<String, Session> sessionMap = new ConcurrentHashMap<>();
 
     /**
-     * 連接建立成功
+     * 用戶連線成功，存到連接集合
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
         Log.info(username + " connect.");
-        System.out.println(username + " connect.");
         sessionMap.put(username, session);
     }
 
@@ -46,7 +45,6 @@ public class WebRtcServer {
             if (entry.getValue() == session) {
                 sessionMap.remove(entry.getKey());
                 Log.info(entry.getKey() + " disconnect.");
-                System.out.println(entry.getKey() + " disconnect.");
                 break;
             }
         }
@@ -60,11 +58,11 @@ public class WebRtcServer {
         for (Map.Entry<String, Session> entry : sessionMap.entrySet()) {
             if (entry.getValue() == session) {
                 sessionMap.remove(entry.getKey());
-                System.out.println(entry.getKey() + " error.");
+                Log.error(entry.getKey() + " error.");
                 break;
             }
         }
-        System.out.println(error.getMessage());
+        Log.error(error.getMessage());
     }
 
     /**
@@ -87,9 +85,9 @@ public class WebRtcServer {
         String msgType = msgFromClient.getType();
 
         //呼叫的用戶不在線
-        if (receiverSession == null) {
+        if (receiverSession == null || !sessionMap.containsKey(msgFromClient.getReceiver())) {
             MsgObj newMsg = new MsgObj();
-            newMsg.setType("call_back");
+            newMsg.setType("hangup");
             newMsg.setSender("SYSTEM");
             newMsg.setMsg("Sorry, user is not available.");
             //回傳給原訊息傳送者
@@ -100,12 +98,12 @@ public class WebRtcServer {
         switch (msgType) {
             //發起視訊請求
             case "call_start":
-                msgFromClient.setMsg(msgFromClient.getSender() + " start calling.");
+                msgFromClient.setMsg(msgFromClient.getSender() + " send call_start.");
                 break;
 
             //回應視訊請求
             case "call_back":
-                msgFromClient.setMsg(msgFromClient.getSender() + " accept calling.");
+                msgFromClient.setMsg(msgFromClient.getSender() + " send call_back.");
                 break;
 
             //結束通話
@@ -126,10 +124,6 @@ public class WebRtcServer {
         }
 
         //發送給訊息接收者
-        if (!msgType.equals("_ice")) {
-            System.out.println(msgFromClient.getMsg());
-            Log.info(msgFromClient.getMsg());
-        }
         send(receiverSession, mapper.writeValueAsString(msgFromClient));
     }
 

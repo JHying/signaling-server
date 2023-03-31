@@ -3,6 +3,7 @@ let remoteVideo = document.getElementById('remoteVideo');
 let websocket = null;
 let peer = null;
 
+FormInit();
 WebSocketInit();//初始化 websocket
 ButtonFunInit();
 
@@ -10,7 +11,7 @@ ButtonFunInit();
 function WebSocketInit() {
     //判斷當前瀏覽器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://localhost:8996/signal/call/" + username);
+        websocket = new WebSocket("wss://60.248.185.146:8999/signal/call/" + username);
     } else {
         alert("WebSocket is not supported on your browser.");
     }
@@ -37,24 +38,27 @@ function WebSocketInit() {
 
         obj = JSON.parse(event.data);
 
-        if (obj.type !== '_ice') {
-            console.log(obj.msg);
-        }
-
         switch (obj.type) {
             //掛斷電話
             case 'hangup':
+                if(obj.sender === 'SYSTEM'){
+                    tempAlert("對象不存在", 5000);
+                } else {
+                    tempAlert("通話已結束", 5000);
+                }
                 document.getElementById('hangup').click();
                 return;
 
             //發起通話請求
             case 'call_start':
                 if (confirm(obj.sender + " 來電，是否接聽？") == true) {
+                    tempAlert("遠距中心來電<br>通話即將開始", 3000);
                     //將連接資訊回覆給 sender
                     document.getElementById('receiver').value = obj.sender;
                     document.getElementById('receiver').style.visibility = 'hidden';//接聽後隱藏表單
+                    //確認接聽，初始化 webRTC、回傳 call back
+                    await delay(5);
                     WebRTCInit();
-                    //確認接聽回傳 call back
                     websocket.send(JSON.stringify({
                         type: "call_back",
                         receiver: obj.sender,
@@ -89,12 +93,6 @@ function WebSocketInit() {
 
             //收到 rtc offer
             case 'offer':
-                //創建本地視訊
-                let stream2 = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localVideo.srcObject = stream2;
-                stream2.getTracks().forEach(track => {
-                    peer.addTrack(track, stream2);
-                });
                 //將遠端資訊記錄下來，回覆 answer
                 await peer.setRemoteDescription(new RTCSessionDescription({ type: obj.type, sdp: obj.sdp }));
                 let answer = await peer.createAnswer();
@@ -123,7 +121,13 @@ function WebSocketInit() {
 
 /* WebRTC initial */
 function WebRTCInit() {
-    peer = new RTCPeerConnection();
+    const ice = {
+      "iceServers": [
+        {"url": "stun:stun.l.google.com:19302"}, //for跨網段
+        // {"url": "turn:turnserver.com", "username": "user", "credential": "pass"}
+      ]
+    };
+    peer = new RTCPeerConnection(ice);
     // 紀錄 ice
     peer.onicecandidate = function (event) {
         if (event.candidate) {
@@ -149,10 +153,12 @@ function ButtonFunInit() {
     document.getElementById('call').onclick = function (e) {
         let receiver = document.getElementById('receiver').value;
         if (!receiver) {
-            alert("請輸入通話對象，再發起視訊通話！");
+            tempAlert("請輸入通話對象", 3000);
             return;
         } else {
             document.getElementById('receiver').style.visibility = 'hidden';//撥打後隱藏表單
+            document.getElementById('call').setAttribute("disabled", "disabled");//撥打後disable通話鍵
+            tempAlert("等待接聽...", 3000);//顯示撥打訊息
         }
         if (peer == null) {
             WebRTCInit();
@@ -167,6 +173,7 @@ function ButtonFunInit() {
     //掛斷電話
     document.getElementById('hangup').onclick = function (e) {
         document.getElementById('receiver').style.visibility = 'unset';//掛掉後開啟表單
+        document.getElementById('call').removeAttribute("disabled");//enable通話鍵
         if (localVideo.srcObject) {
             const videoTracks = localVideo.srcObject.getVideoTracks();
             videoTracks.forEach(videoTrack => {
@@ -194,4 +201,35 @@ function ButtonFunInit() {
         localVideo.srcObject = null;
         remoteVideo.srcObject = null;
     }
+}
+
+function FormInit() {
+    if(username !== 'center') {
+        document.getElementById("receiver").style.display = 'none';//統一從center發起通話
+        document.getElementById("buttons").style.display = 'none';//統一從center控制通話
+    } else {
+        if(target !== null) {
+            //如果有指定對象，則綁定對象(不給修改)
+            document.getElementById("receiver").value = target;
+            document.getElementById("receiver").setAttribute("disabled", "disabled");
+            document.getElementById("receiver").readOnly = true;
+            document.getElementById("receiver").style.color = "#D0D0D0";
+        }
+    }
+}
+
+function tempAlert(msg, duration) {
+ var el = document.createElement("div");
+ el.setAttribute("style","position:absolute;color: white;background-color:black;font-size: 2em");
+ el.innerHTML = msg;
+ setTimeout(function(){
+  el.parentNode.removeChild(el);
+ },duration);
+ document.body.appendChild(el);
+}
+
+function delay(n){
+    return new Promise((r) => {
+        setTimeout(r, n * 1000);
+    });
 }

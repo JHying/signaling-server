@@ -9,6 +9,7 @@ import org.springframework.retry.annotation.EnableRetry;
  */
 @EnableRetry
 @SpringBootApplication
+//@EnableEurekaClient
 public class SignalingServerApplication {
 
     public static void main(String[] args) {

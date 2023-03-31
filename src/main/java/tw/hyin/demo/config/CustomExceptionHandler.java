@@ -1,7 +1,7 @@
 package tw.hyin.demo.config;
 
 import tw.hyin.demo.Log;
-import tw.hyin.demo.repo.dto.ResponseObj;
+import tw.hyin.demo.dto.ResponseObj;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

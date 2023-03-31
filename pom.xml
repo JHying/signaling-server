@@ -68,6 +68,15 @@
                     <sourceDirectory>${pom.basedir}/src/main/java</sourceDirectory>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>p12</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -111,13 +120,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
-
-        <!--Database -->
-        <!--		<dependency>-->
-        <!--			<groupId>mysql</groupId>-->
-        <!--			<artifactId>mysql-connector-java</artifactId>-->
-        <!--			<scope>runtime</scope>-->
-        <!--		</dependency>-->
 
         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
         <dependency>

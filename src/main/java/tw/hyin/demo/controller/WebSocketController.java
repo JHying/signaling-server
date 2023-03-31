@@ -23,4 +23,16 @@ public class WebSocketController {
         return modelAndView;
     }
 
+    /**
+     * 通訊用 api
+     */
+    @RequestMapping("call/{username}.html/{target}")
+    public ModelAndView callSpecific(@PathVariable String username, @PathVariable String target) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("index.html");
+        modelAndView.addObject("username", username);
+        modelAndView.addObject("target", target);
+        return modelAndView;
+    }
+
 }
