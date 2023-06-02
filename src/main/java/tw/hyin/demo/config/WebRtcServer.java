@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author JHying(Rita) on 2022.
- * @description WebRTC(建立會話流程) + WebSocket(監聽會話請求)
+ * @description WebRTC(建立會話) + WebSocket(監聽會話請求)
  */
 @Component
 @ServerEndpoint(value = "/call/{username}") //配置 WebSocket 服務的進入點 (對應到開放的 api 介面)

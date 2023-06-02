@@ -1,10 +1,16 @@
 # Introduction
 
 視訊 Server - WebRTC + WebSocket
-為支援不同客戶端，使用 SDP (session description protocol) 作為通訊協定
-連線: http://localhost:8088/signal/call/{username}.html
 
-(本專案不包含 ssl - p12 檔)
+1. 為支援不同客戶端，使用 SDP (session description protocol) 作為通訊協定 
+2. 使用 Google STUN，支援不同網段 
+3. 簡易的 RWD 設計
+4. 微服務部署（使用 eureka 註冊）
+5. 需注意：video/media 權限僅支援 https
+
+連線: http://localhost:8999/signal/call/{username}.html
+
+(本專案不包含 ssl 檔)
 
 1. 開發環境：IntelliJ IDEA 2022.1
 

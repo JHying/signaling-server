@@ -11,7 +11,7 @@ ButtonFunInit();
 function WebSocketInit() {
     //判斷當前瀏覽器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("wss://60.248.185.146:8999/signal/call/" + username);
+        websocket = new WebSocket("wss://www.hyindemo.tw/signal/call/" + username);
     } else {
         alert("WebSocket is not supported on your browser.");
     }
@@ -51,9 +51,8 @@ function WebSocketInit() {
 
             //發起通話請求
             case 'call_start':
-                //只有病人會需要確認，但礙於到時候可能無法點選，所以用alert自動接聽
-                //if (confirm(obj.sender + " 來電，是否接聽？") == true) {
-                    tempAlert("遠距中心來電<br>通話即將開始", 6000);
+                if (confirm(obj.sender + " 來電，是否接聽？") == true) {
+                    tempAlert("中心來電，通話即將開始", 6000);
                     //將連接資訊回覆給 sender
                     document.getElementById('receiver').value = obj.sender;
                     document.getElementById('receiver').style.visibility = 'hidden';//接聽後隱藏表單
@@ -65,15 +64,15 @@ function WebSocketInit() {
                         receiver: obj.sender,
                         sender: username,
                     }));
-//                } else {
-//                    //拒絕通話掛掉電話
-//                    websocket.send(JSON.stringify({
-//                        type: "hangup",
-//                        receiver: obj.sender,
-//                        sender: username,
-//                    }));
-//                }
-//                return;
+                } else {
+                    //拒絕通話掛掉電話
+                    websocket.send(JSON.stringify({
+                        type: "hangup",
+                        receiver: obj.sender,
+                        sender: username,
+                    }));
+                }
+                return;
 
             //接收到通話請求回覆，傳送 rtc offer 給對方
             case 'call_back':
@@ -122,7 +121,7 @@ function WebSocketInit() {
 
 /* WebRTC initial */
 function WebRTCInit() {
-    const ice = {
+    const ice = {//for跨網段通訊
       "iceServers": [
         {"url": "stun:stun.l.google.com:19302"},
         // {"url": "turn:turnserver.com", "username": "user", "credential": "pass"} //範例
@@ -205,10 +204,10 @@ function ButtonFunInit() {
 }
 
 function FormInit() {
-    if(username !== 'center') {
-        document.getElementById("receiver").style.display = 'none';//統一從醫院端發起通話
-        document.getElementById("buttons").style.display = 'none';//統一從醫院端控制通話
-    } else {
+//    if(username !== 'center') {
+//        document.getElementById("receiver").style.display = 'none';//統一從center發起通話
+//        document.getElementById("buttons").style.display = 'none';//統一從center控制通話
+//    } else {
         if(target !== null) {
             //如果有指定對象，則綁定對象(不給修改)
             document.getElementById("receiver").value = target;
@@ -216,7 +215,7 @@ function FormInit() {
             document.getElementById("receiver").readOnly = true;
             document.getElementById("receiver").style.color = "#D0D0D0";
         }
-    }
+//    }
 }
 
 function tempAlert(msg, duration) {
@@ -238,7 +237,7 @@ function delay(n) {
 
 function sendMessage(msg) {
     // Wait until the state of the socket is not ready and send the message when it is...
-    WaitForSocketConnection(websocket, function() {
+    waitForSocketConnection(websocket, function() {
         websocket.send(msg);
     });
 }

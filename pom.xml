@@ -12,7 +12,7 @@
     </parent>
     <groupId>tw.hyin.demo</groupId>
     <artifactId>signaling-server</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>signaling-server</name>
     <description>視訊通訊服務 (WebRTC + WebSocket)</description>
@@ -84,9 +84,37 @@
         <java.version>11</java.version>
         <!--analysis with sonar-->
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <spring-cloud.version>2021.0.4</spring-cloud.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+
+<!--        &lt;!&ndash; Spring cloud 新版需引入，否則 RefreshScope 不生效 &ndash;&gt;-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <!--Spring Cloud LoadBalancer is currently working with the default cache.-->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
 
         <!-- 處理 Java 基本物件方法的 Apache 工具類包 -->
         <dependency>
